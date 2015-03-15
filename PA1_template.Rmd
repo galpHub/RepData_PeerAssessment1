@@ -73,7 +73,9 @@ timeOfDay <- computedActivity$timeOfDay
 
 ### Constructing a plot of the averageActivityPerDay vs. the time of day.
 
-plot(timeOfDay,averageActivityPerDay, type ="l",xlab ="Time of Day",ylab="Average Steps per Day")
+plot(timeOfDay,averageActivityPerDay, type ="l",xlab ="Time of Day",
+     ylab="Average Steps per Day")
+dev.copy
 
 
 ### Determining the interval(s) containing the largest average steps per day.
@@ -82,6 +84,7 @@ highestAvgSteps <- max(averageActivityPerDay)
 times[averageActivityPerDay==highestAvgSteps]
 ```
 
+It seems that the data on this person indicates that their activity peaks at 8:35 am as indicated by the label "835" and can be seen in the previous plot.
 
 
 ## Inputing missing values
@@ -91,10 +94,8 @@ times[averageActivityPerDay==highestAvgSteps]
 ## the missing value.
 boolNaIndices <- is.na(data$steps)
 totalNAs <- sum( boolNaIndices )
-```
 
 ### Replacing the missing values with the average value for the corresponding interval.
-```{r}
 newdata <- data
 
 replaceNA <- function(x){ 
@@ -102,9 +103,7 @@ replaceNA <- function(x){
       }
 
 newdata[boolNaIndices,]$steps <- sapply(data[boolNaIndices,]$interval, replaceNA)
-```
-### What is mean total number of steps taken per day in the new data?
-```{r}
+
 ### Computing the median and mean of total number of steps per day in the new 
 ### data
 ## We use the previously defined totalSteps function and then compute the mean
@@ -115,6 +114,8 @@ hist(totalStepValues)
 mean(totalStepValues)
 median(totalStepValues)
 ```
+
+One expects that by replacing missing values by estimates would tend to bias the results towards the estimated value. In this case it was expected that the bias would be toward the average number of steps per time interval. Somewhat suprisingly it seems that this did not have much influence on the mean and median since the values are same.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 ```{r}
