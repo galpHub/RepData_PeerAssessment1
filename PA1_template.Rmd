@@ -4,8 +4,6 @@ output:
 html_document:
 keep_md: true
 ---
-
-
 ## Loading and preprocessing the data
 ```{r}
 ## Unzipping the data, loading it into a data frame.
@@ -37,9 +35,6 @@ totalSteps <- function(inputData){
       totalStepsPerDay <- sapply(stepsgroupedByDay, newsum)
 }
 
-```
-### Computing the median and mean of total number of steps per day
-```{r}
 totalStepValues <- totalSteps(data)
 hist(totalStepValues)
 mean(totalStepValues)
@@ -69,20 +64,20 @@ activityPattern <- function(inputData){
            times=time)
 }
 
-## averageActivityPerDay computes the average number of steps, over 5 minute
+## averageActivityPerDay contains the average number of steps, over 5 minute
 ## intervals, across all of the days in the data set.
 computedActivity <- activityPattern(data)
 averageActivityPerDay <-  computedActivity$averageActivityPerDay
 times <- computedActivity$times
 timeOfDay <- computedActivity$timeOfDay
-```
 
 ### Constructing a plot of the averageActivityPerDay vs. the time of day.
-```{r}
+
 plot(timeOfDay,averageActivityPerDay, type ="l",xlab ="Time of Day",ylab="Average Steps per Day")
-```
+
+
 ### Determining the interval(s) containing the largest average steps per day.
-```{r}
+
 highestAvgSteps <- max(averageActivityPerDay)
 times[averageActivityPerDay==highestAvgSteps]
 ```
@@ -90,9 +85,8 @@ times[averageActivityPerDay==highestAvgSteps]
 
 
 ## Inputing missing values
-
-### Counting the total number of missing values.
 ```{r}
+### Counting the total number of missing values.
 ## Replacing NAs with the 5-min time-interval average corresponding to 
 ## the missing value.
 boolNaIndices <- is.na(data$steps)
@@ -110,9 +104,9 @@ replaceNA <- function(x){
 newdata[boolNaIndices,]$steps <- sapply(data[boolNaIndices,]$interval, replaceNA)
 ```
 ### What is mean total number of steps taken per day in the new data?
-
-### Computing the median and mean of total number of steps per day in the new data
 ```{r}
+### Computing the median and mean of total number of steps per day in the new 
+### data
 ## We use the previously defined totalSteps function and then compute the mean
 ## and median and construt a histogram to show the frequency count of total step
 ## in the filled in data.
@@ -129,6 +123,49 @@ weekDay_or_weekEnd <- function(x){
       typeOfDay <- character(length(x))
       typeOfDay[dayOfX=="Sunday"|dayOfX=="Saturday"] = "weekend"
       typeOfDay[!(dayOfX=="Sunday"|dayOfX=="Saturday")] = "weekday"
+      return(typeOfDay)
 }
 newdata$weekday_or_weekend <- weekDay_or_weekEnd(data$date)
+
+## Separates the data by weekday vs. weekend
+splitData <- split(newdata, newdata$weekday_or_weekend)
+
+## Computes the activity pattern separately for weekdays and weekends
+weekendActivity <- activityPattern(splitData[["weekend"]])
+splitData[["weekend"]]$averageActivity <- weekendActivity$averageActivityPerDay
+
+weekdayActivity <- activityPattern(splitData[["weekday"]])
+splitData[["weekday"]]$averageActivity <- weekdayActivity$averageActivityPerDay
+
+## Construct a panel plot showing the average activity time series for weekends
+## vs. weekdays
+par(mfrow=c(2,1))
+with(splitData[["weekday"]],plot(timeOfDay,averageActivityPerDay, type ="l",xlab
+                                 ="Time of Day",ylab="Average Steps per Day",
+                                 main= "Weekday") )
+with(splitData[["weekend"]],plot(timeOfDay,averageActivityPerDay, type ="l",xlab
+                                 ="Time of Day",ylab="Average Steps per Day",
+                                 main= "Weekend") )
 ```
+
+
+## Comments about the results obtained from this analysis (Unrelated to assignment but fun).
+The way that it is plotted hides small differences. So perhaps it is worth considering a plot that overlays the two time series.
+```{r}
+with(splitData[["weekday"]],plot(timeOfDay,averageActivityPerDay, type ="l",xlab
+                                 ="Time of Day",ylab="Average Steps per Day",
+                                 main= "Daily activity") )
+with(splitData[["weekend"]],points(timeOfDay,averageActivityPerDay,col="blue") )
+```
+
+Supprisingly, it seems that this person has the same activity pattern over weekdays as they have over weekends. This could either be a funny coincidence or more likely most of the missing values are from the weekends. Since I replaced the missing values with the interval averages and weekends are likely to yield NA. So lets examine this hypothesis :D!
+
+##
+```{r}
+data$weekday_or_weekend <- weekDay_or_weekEnd(data$date)
+splitOldData <- split(data, data$weekday_or_weekend)
+sum(is.na(splitOldData[["weekday"]]$steps))/length(splitOldData[["weekday"]]$steps)
+sum(is.na(splitOldData[["weekend"]]$steps))/length(splitOldData[["weekend"]]$steps)
+```
+
+Amazing! The proportion of missing values is the same in both weekdays and weekends so its unlikely that the filling in proceedure biased the results! :D wow!
