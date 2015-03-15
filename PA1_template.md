@@ -47,7 +47,7 @@ totalStepValues <- totalSteps(data)
 hist(totalStepValues)
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
+![plot of chunk totalStepsOlddata](figure/totalStepsOlddata-1.png) 
 
 ```r
 mean(totalStepValues)
@@ -102,7 +102,7 @@ plot(timeOfDay,averageActivityPerDay, type ="l",xlab ="Time of Day",
      ylab="Average Steps per Day")
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+![plot of chunk dailyActivity](figure/dailyActivity-1.png) 
 
 ```r
 dev.copy
@@ -178,7 +178,7 @@ totalStepValues <- totalSteps(newdata)
 hist(totalStepValues)
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+![plot of chunk totalStepsNewdata](figure/totalStepsNewdata-1.png) 
 
 ```r
 mean(totalStepValues)
@@ -231,7 +231,7 @@ with(splitData[["weekend"]],plot(timeOfDay,averageActivityPerDay, type ="l",xlab
                                  main= "Weekend") )
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+![plot of chunk weekendsVSweekdays](figure/weekendsVSweekdays-1.png) 
 
 
 ## Comments about the results obtained from this analysis (Unrelated to assignment but fun).
@@ -244,7 +244,7 @@ with(splitData[["weekday"]],plot(timeOfDay,averageActivityPerDay, type ="l",xlab
 with(splitData[["weekend"]],points(timeOfDay,averageActivityPerDay,col="blue") )
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
+![plot of chunk overlayTimeSeries](figure/overlayTimeSeries-1.png) 
 
 Supprisingly, it seems that this person has the same activity pattern over weekdays as they have over weekends. This could either be a funny coincidence or more likely most of the missing values are from the weekends. Since I replaced the missing values with the interval averages and weekends are likely to yield NA. So lets examine this hypothesis :D!
 
