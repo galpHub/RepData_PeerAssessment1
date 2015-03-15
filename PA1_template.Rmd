@@ -1,8 +1,8 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
 output: 
-  html_document:
-    keep_md: true
+html_document:
+keep_md: true
 ---
 
 
@@ -26,17 +26,24 @@ data$date <- strptime(data$date, format="%Y-%m-%d")
 ## Define a new sum function that already removes the NA values.
 newsum <- function(x){ sum(x,na.rm=TRUE)}
 
-## Groups dates into factors by days.
-stepsgroupedByDay <- split(data$steps,cut(data$date,breaks="day"))
+## This function computes the total number of steps on a data frame containing 
+## step count information in the format [date, number of steps,interval,...]
+totalSteps <- function(inputData){
+      ## Groups dates into factors by days.
+      stepsgroupedByDay <- split(data$steps,cut(inputData$date,breaks="day"))
+      
+      ## To compute the total number of steps per day we can split the number
+      ## of steps according to the date labels and apply the newsum function.
+      totalStepsPerDay <- sapply(stepsgroupedByDay, newsum)
+}
 
-## To compute the total number of steps per day we can split the number of steps
-## according to the date labels and apply the newsum function.
-totalStepsPerDay <- sapply(stepsgroupedByDay, newsum)
 ```
 ### Computing the median and mean of total number of steps per day
 ```{r}
-mean(totalStepsPerDay)
-median(totalStepsPerDay)
+totalStepValues <- totalSteps(data)
+hist(totalStepValues)
+mean(totalStepValues)
+median(totalStepValues)
 ```
 
 
@@ -48,14 +55,28 @@ median(totalStepsPerDay)
 ## Define a short hand version of the function mean(x, na.rm = TRUE)
 newmean <- function(x){mean(x,na.rm =TRUE)}
 
+## This function computes the activity pattern on a data frame containing 
+## step count information in the format [date, number of steps,interval,...]
+activityPattern <- function(inputData){
+      splitData <- split(inputData$steps,inputData$interval)
+      avgActivityPerDay <-  sapply(splitData,newmean)
+      time <- as.numeric(names(avgActivityPerDay))
+      hour <- as.character( (time - time%%100)/100 )
+      minute<- as.character(time %%100)
+      timeStamps <- paste(hour,minute,"00", sep =":")
+      timeOfDay <- strptime(timeStamps,format="%H:%M:%S")
+      list(timeOfDay = timeOfDay, averageActivityPerDay = avgActivityPerDay,
+           times=time)
+}
+
 ## averageActivityPerDay computes the average number of steps, over 5 minute
 ## intervals, across all of the days in the data set.
-averageActivityPerDay <-  sapply(split(data$steps,data$interval),newmean)
-times <- as.numeric(names(averageActivityPerDay))
-hours <- as.character( (times - times%%100)/100 )
-minutes<- as.character(times %%100)
-timeOfDay <- strptime(paste(hours,minutes,"00", sep =":"),format="%H:%M:%S")
+computedActivity <- activityPattern(data)
+averageActivityPerDay <-  computedActivity$averageActivityPerDay
+times <- computedActivity$times
+timeOfDay <- computedActivity$timeOfDay
 ```
+
 ### Constructing a plot of the averageActivityPerDay vs. the time of day.
 ```{r}
 plot(timeOfDay,averageActivityPerDay, type ="l",xlab ="Time of Day",ylab="Average Steps per Day")
@@ -66,8 +87,48 @@ highestAvgSteps <- max(averageActivityPerDay)
 times[averageActivityPerDay==highestAvgSteps]
 ```
 
+
+
 ## Inputing missing values
 
+### Counting the total number of missing values.
+```{r}
+## Replacing NAs with the 5-min time-interval average corresponding to 
+## the missing value.
+boolNaIndices <- is.na(data$steps)
+totalNAs <- sum( boolNaIndices )
+```
 
+### Replacing the missing values with the average value for the corresponding interval.
+```{r}
+newdata <- data
+
+replaceNA <- function(x){ 
+      averageActivityPerDay[as.character(x)]
+      }
+
+newdata[boolNaIndices,]$steps <- sapply(data[boolNaIndices,]$interval, replaceNA)
+```
+### What is mean total number of steps taken per day in the new data?
+
+### Computing the median and mean of total number of steps per day in the new data
+```{r}
+## We use the previously defined totalSteps function and then compute the mean
+## and median and construt a histogram to show the frequency count of total step
+## in the filled in data.
+totalStepValues <- totalSteps(newdata)
+hist(totalStepValues)
+mean(totalStepValues)
+median(totalStepValues)
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r}
+weekDay_or_weekEnd <- function(x){
+      dayOfX <- weekdays(x)
+      typeOfDay <- character(length(x))
+      typeOfDay[dayOfX=="Sunday"|dayOfX=="Saturday"] = "weekend"
+      typeOfDay[!(dayOfX=="Sunday"|dayOfX=="Saturday")] = "weekday"
+}
+newdata$weekday_or_weekend <- weekDay_or_weekEnd(data$date)
+```
