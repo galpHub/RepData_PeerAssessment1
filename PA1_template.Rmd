@@ -8,21 +8,64 @@ output:
 
 ## Loading and preprocessing the data
 ```{r}
-## Unzipping the data
+## Unzipping the data, loading it into a data frame, and cleaning up
 unzip("activity.zip")
-data <- read.csv("activity.csv")
+data <- read.csv(file = "activity.csv", header = TRUE)
+file.remove("activity.csv")
 
-## Preprocessing the data
+## Preprocessing the data. 
 
+## Transforming days (as factors) into time variables - this does not take
+## into account the time of day.
+data$date <- strptime(data$date, format="%Y-%m-%d")
 
+## Adding a new variable
 ```
-## What is mean total number of steps taken per day?
 
+## What is mean total number of steps taken per day?
+```{r}
+## Define a function computing the mean after removal of NA's for later use with
+## sapply
+meanNoNA <- function(x = NaN){ mean(x, na.rm = TRUE) }
+
+## Groups dates into factors by days
+stepsgroupedByDay <- split(data$steps,cut(data$date,breaks="day"))
+
+## To compute the mean number of steps per day we can split the number of steps
+## according to the date labels and apply the meanNoNA function
+meanStepsPerDay <- sapply(stepsgroupedByDay, meanNoNA )
+
+## The meanStepsPerDay variable uses the levels of the factor as names, i.e. 
+## character vectors containing the day in format "%Y-%m-%d 00:00:00"
+datesAt23h <- names(meanStepsPerDay)
+daysInData <- strptime(datesAt23h, format = "%Y-%m-%d %H:%M:%S")
+
+## Histogram of the average steps per day.
+hist(meanStepsPerDay)
+
+## Computes the total number of steps taken in a day by summing the steps 
+## per interval while removing NA's
+totalStepsPerDay<-sapply(stepsgroupedByDay,function(x){ sum(x,na.rm=TRUE)})
+
+## Computes the mean and median of total number of steps per day over the
+## course of the two months.
+mean(totalStepsPerDay,na.rm=TRUE)
+median(totalStepsPerDay,na.rm=TRUE)
+```
 
 
 ## What is the average daily activity pattern?
+```{r}
+## averageActivityPerDay computes the average number of steps, over 5 minute
+## intervals, across all of the days in the data set.
+averageActivityPerDay <-  sapply(split(data$steps,data$interval),meanNoNA)
+times <- as.numeric(names(averageActivityPerDay))
+hours <- as.character( (times - times%%100)/100 )
+minutes<- as.character(times %%100)
+timeOfDay <- strptime(paste(hours,minutes,"00", sep =":"),format="%H:%M:%S")
 
-
+plot(timeOfDay,averageActivityPerDay)
+```
 
 ## Imputing missing values
 
