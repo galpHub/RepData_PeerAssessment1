@@ -75,7 +75,6 @@ timeOfDay <- computedActivity$timeOfDay
 
 plot(timeOfDay,averageActivityPerDay, type ="l",xlab ="Time of Day",
      ylab="Average Steps per Day")
-dev.copy
 
 
 ### Determining the interval(s) containing the largest average steps per day.
@@ -169,4 +168,4 @@ sum(is.na(splitOldData[["weekday"]]$steps))/length(splitOldData[["weekday"]]$ste
 sum(is.na(splitOldData[["weekend"]]$steps))/length(splitOldData[["weekend"]]$steps)
 ```
 
-Amazing! The proportion of missing values is the same in both weekdays and weekends so its unlikely that the filling in proceedure biased the results! :D wow!
+Amazing! The proportion of missing values is almost the same in both weekdays and weekends so its unlikely that the filling in proceedure biased the results! :D wow!
