@@ -1,9 +1,6 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-html_document:
-keep_md: true
----
+# Reproducible Research: Peer Assessment 1
+
+
 ## Loading and preprocessing the data
 
 ```r
@@ -47,7 +44,7 @@ totalStepValues <- totalSteps(data)
 hist(totalStepValues)
 ```
 
-![plot of chunk totalStepsOlddata](figure/totalStepsOlddata-1.png) 
+![](figure/totalStepsOlddata-1.png) 
 
 ```r
 mean(totalStepValues)
@@ -102,40 +99,7 @@ plot(timeOfDay,averageActivityPerDay, type ="l",xlab ="Time of Day",
      ylab="Average Steps per Day")
 ```
 
-![plot of chunk dailyActivity](figure/dailyActivity-1.png) 
-
-```r
-dev.copy
-```
-
-```
-## function (device, ..., which = dev.next()) 
-## {
-##     if (!missing(which) & !missing(device)) 
-##         stop("cannot supply 'which' and 'device' at the same time")
-##     old.device <- dev.cur()
-##     if (old.device == 1) 
-##         stop("cannot copy from the null device")
-##     if (missing(device)) {
-##         if (which == 1) 
-##             stop("cannot copy to the null device")
-##         else if (which == dev.cur()) 
-##             stop("cannot copy device to itself")
-##         dev.set(which)
-##     }
-##     else {
-##         if (!is.function(device)) 
-##             stop("'device' should be a function")
-##         else device(...)
-##     }
-##     on.exit(dev.set(old.device))
-##     .External(C_devcopy, old.device)
-##     on.exit()
-##     dev.cur()
-## }
-## <bytecode: 0x0000000008cdffb8>
-## <environment: namespace:grDevices>
-```
+![](figure/dailyActivity-1.png) 
 
 ```r
 ### Determining the interval(s) containing the largest average steps per day.
@@ -178,7 +142,7 @@ totalStepValues <- totalSteps(newdata)
 hist(totalStepValues)
 ```
 
-![plot of chunk totalStepsNewdata](figure/totalStepsNewdata-1.png) 
+![](figure/totalStepsNewdata-1.png) 
 
 ```r
 mean(totalStepValues)
@@ -231,7 +195,7 @@ with(splitData[["weekend"]],plot(timeOfDay,averageActivityPerDay, type ="l",xlab
                                  main= "Weekend") )
 ```
 
-![plot of chunk weekendsVSweekdays](figure/weekendsVSweekdays-1.png) 
+![](figure/weekendsVSweekdays-1.png) 
 
 
 ## Comments about the results obtained from this analysis (Unrelated to assignment but fun).
@@ -244,7 +208,7 @@ with(splitData[["weekday"]],plot(timeOfDay,averageActivityPerDay, type ="l",xlab
 with(splitData[["weekend"]],points(timeOfDay,averageActivityPerDay,col="blue") )
 ```
 
-![plot of chunk overlayTimeSeries](figure/overlayTimeSeries-1.png) 
+![](figure/overlayTimeSeries-1.png) 
 
 Supprisingly, it seems that this person has the same activity pattern over weekdays as they have over weekends. This could either be a funny coincidence or more likely most of the missing values are from the weekends. Since I replaced the missing values with the interval averages and weekends are likely to yield NA. So lets examine this hypothesis :D!
 
@@ -268,4 +232,4 @@ sum(is.na(splitOldData[["weekend"]]$steps))/length(splitOldData[["weekend"]]$ste
 ## [1] 0.125
 ```
 
-Amazing! The proportion of missing values is the same in both weekdays and weekends so its unlikely that the filling in proceedure biased the results! :D wow!
+Amazing! The proportion of missing values is almost the same in both weekdays and weekends so its unlikely that the filling in proceedure biased the results! :D wow!

@@ -1,9 +1,13 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-html_document:
-keep_md: true
+title: 'Reproducible Research: Peer Assessment 1'
+output:
+  html_document:
+    keep_md: yes
 ---
+```{r global_options, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(fig.path='figure/')
+```
+
 ## Loading and preprocessing the data
 ```{r}
 ## Unzipping the data, loading it into a data frame.
